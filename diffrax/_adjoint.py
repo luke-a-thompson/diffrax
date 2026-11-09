@@ -1031,8 +1031,11 @@ def _loop_reversible_bwd(
             grad_terms,
         ) = state
 
-        t1 = ts[ts_index]
-        t0 = ts[ts_index - 1]
+        # A vmapped while loop may evaluate finished batch members. Keep their
+        # unused solver calls inside the accepted time interval.
+        step_index = jnp.maximum(ts_index, 1)
+        t1 = ts[step_index]
+        t0 = ts[step_index - 1]
 
         # Any ts state required to reverse the forward step
         # e.g. LeapfrogMidpoint requires tm1
@@ -1341,8 +1344,11 @@ def _loop_reversible_bwd(
             grad_terms,
         ) = state
 
-        t1 = ts[ts_index]
-        t0 = ts[ts_index - 1]
+        # A vmapped while loop may evaluate finished batch members. Keep their
+        # unused solver calls inside the accepted time interval.
+        step_index = jnp.maximum(ts_index, 1)
+        t1 = ts[step_index]
+        t0 = ts[step_index - 1]
 
         # Any ts state required to reverse the forward step
         # e.g. LeapfrogMidpoint requires tm1
